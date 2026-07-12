@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Z-HALF-LIFE: 2 | Loading</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet" />
+  <title>HL2RP | Loading</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet" />
   <style>
     /* Reset & Basis */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -12,70 +12,99 @@
         width: 100%; 
         height: 100%; 
         overflow: hidden; 
-        background: #000; 
+        background: #050505; 
         font-family: 'Roboto Condensed', Arial, sans-serif; 
     }
 
-    /* ── Hintergrundbild ────────────────── */
-    #slideshow { 
+    /* ── Hintergrundbild (Statisch, nur 1 Bild) ────────────────── */
+    #background { 
         position: absolute; 
         top: 0; left: 0; right: 0; bottom: 0;
+        background-image: url('assets/picture1.png');
+        background-size: cover; 
+        background-position: center;
+        background-repeat: no-repeat;
         z-index: 1; 
     }
-    .slide {
-      position: absolute; 
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-size: cover; 
-      background-position: center;
-      background-repeat: no-repeat;
-      /* Weicher Fade für den Übergang (2 Sekunden) */
-      transition: opacity 2s ease-in-out;
-    }
     
-    /* Dunkles Overlay */
+    /* Düsteres HL2-Overlay (Vignette) */
     #overlay { 
         position: absolute; 
         top: 0; left: 0; right: 0; bottom: 0;
-        background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.6) 100%);
+        background: linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.85) 100%);
         z-index: 2;
+    }
+
+    /* Terminal Scanlines für das "krassere" Feeling */
+    #scanlines {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+        background-size: 100% 4px;
+        z-index: 3;
+        pointer-events: none;
     }
 
     /* ── Info Panel ────────────────── */
     #info-panel {
       position: absolute;
-      top: 10%;
-      left: 60px;
+      bottom: 8%;
+      left: 5%;
       z-index: 10;
       color: #fff;
       text-transform: uppercase;
       opacity: 0;
-      transform: translateX(-30px);
+      transform: translateY(30px);
       transition: all 1.2s ease-out;
-      max-width: 600px; 
+      max-width: 650px; 
     }
-    #info-panel.visible { opacity: 1; transform: translateX(0); }
+    #info-panel.visible { opacity: 1; transform: translateY(0); }
 
+    /* Überschrift mit typischem HL2-Orange */
     #info-panel h1 { 
-        font-size: 72px; 
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 68px; 
         font-weight: 700; 
         line-height: 0.9; 
-        letter-spacing: -2px; 
-        text-shadow: 2px 2px 15px rgba(0,0,0,0.7);
-        margin-bottom: 20px;
+        letter-spacing: 2px; 
+        text-shadow: 2px 2px 15px rgba(0,0,0,0.9);
+        margin-bottom: 15px;
+        border-bottom: 2px solid #f37925;
+        padding-bottom: 10px;
+        display: inline-block;
     }
-    #info-panel h1 span { color: #ff0000; } 
+    /* Das Orange aus dem Half-Life Logo */
+    #info-panel h1 span { color: #f37925; } 
     
     #info-panel p { 
         font-size: 18px; 
         font-weight: 300; 
-        color: #ddd; 
+        color: #d1d1d1; 
         letter-spacing: 1px;
-        text-shadow: 1px 1px 8px rgba(0,0,0,0.8);
+        text-shadow: 1px 1px 8px rgba(0,0,0,0.9);
         text-transform: none;
         line-height: 1.6;
-        background: rgba(0, 0, 0, 0.4);
-        padding: 15px;
-        border-left: 4px solid #ff0000;
+        background: rgba(10, 10, 10, 0.7);
+        padding: 20px;
+        border-left: 4px solid #f37925;
+        box-shadow: 0px 5px 15px rgba(0,0,0,0.5);
+    }
+
+    /* Blinkender Status-Text */
+    .loading-status {
+        margin-top: 15px;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 16px;
+        color: #f37925;
+        letter-spacing: 3px;
+        font-weight: bold;
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+        0% { opacity: 0.3; }
+        50% { opacity: 1; }
+        100% { opacity: 0.3; }
     }
   </style>
 </head>
@@ -83,102 +112,32 @@
 
   <audio id="bg-music" loop></audio>
 
-  <!-- Leerer Container, wird per JavaScript gefüllt -->
-  <div id="slideshow"></div>
+  <!-- Das einzige Bild -->
+  <div id="background"></div>
 
+  <!-- Visuelle Effekte -->
   <div id="overlay"></div>
+  <div id="scanlines"></div>
 
-<div id="info-panel">
-  <h1>FRONTLINES<br><span>WARFARE</span></h1>
-  <p>
-    A high-quality HL2RP server based on Z-City with a lot of custom features, a custom framework, and much more!
-    We use only high-quality models and strive to provide the best RP experience possible!
-    Trust me, the loading time will be worth it...
-  </p>
-</div>
+  <!-- Textbereich -->
+  <div id="info-panel">
+    <h1>FRONTLINES<br><span>WARFARE</span></h1>
+    <p>
+      A high-quality HL2RP server based on Z-City with a lot of custom features, a custom framework, and much more!
+      We use only high-quality models and strive to provide the best RP experience possible!
+      Trust me, the loading time will be worth it...
+    </p>
+    <div class="loading-status">ESTABLISHING CONNECTION...</div>
+  </div>
 
   <script>
-    /* ==========================================================
-       BILDER SLIDESHOW LOGIK
-       ========================================================== */
-    var images = [
-      'assets/picture1.png',
-      'assets/picture2.png',
-      'assets/picture3.png',
-      'assets/picture4.png',
-      'assets/picture5.png',
-      'assets/picture6.png',
-      'assets/picture7.png'
-    ];
-
-    // Funktion um Arrays zufällig zu mischen
-    function shuffleArray(array) {
-      let shuffled = array.slice();
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-      }
-      return shuffled;
-    }
-
-    let slideshowContainer = document.getElementById('slideshow');
-    let shuffledImages = shuffleArray(images);
-    let currentImageIndex = 0;
-    let currentSlide = null;
-
-    // Erstes Bild laden
-    function initSlideshow() {
-      currentSlide = document.createElement('div');
-      currentSlide.className = 'slide';
-      currentSlide.style.backgroundImage = "url('" + shuffledImages[currentImageIndex] + "')";
-      currentSlide.style.opacity = 1;
-      currentSlide.style.zIndex = 1;
-      slideshowContainer.appendChild(currentSlide);
-
-      // Starte Intervall (alle 6 Sekunden wechselt das Bild)
-      setInterval(changeSlide, 6000);
-    }
-
-    function changeSlide() {
-      currentImageIndex++;
-
-      // Wenn alle Bilder durch sind, neu mischen (randomized immer wieder)
-      if (currentImageIndex >= shuffledImages.length) {
-        shuffledImages = shuffleArray(images);
-        currentImageIndex = 0;
-      }
-
-      // Neues Bild-Element erstellen
-      let nextSlide = document.createElement('div');
-      nextSlide.className = 'slide';
-      nextSlide.style.backgroundImage = "url('" + shuffledImages[currentImageIndex] + "')";
-      nextSlide.style.opacity = 0; 
-      nextSlide.style.zIndex = 2; // Wird über das aktuelle Bild gelegt (verhindert schwarzen Bildschirm)
-      
-      slideshowContainer.appendChild(nextSlide);
-
-      // Kurz warten, damit das Element im DOM gerendert ist, bevor opacity animiert wird
-      setTimeout(function() {
-        nextSlide.style.opacity = 1;
-      }, 50);
-
-      // Nach Abschluss der Animation (2 Sekunden) das alte Bild entfernen
-      setTimeout(function() {
-        if (currentSlide && currentSlide.parentNode) {
-          slideshowContainer.removeChild(currentSlide);
-        }
-        currentSlide = nextSlide;
-        currentSlide.style.zIndex = 1; // Z-Index wieder zurücksetzen
-      }, 2050);
-    }
-
     /* ==========================================================
        AUDIO & GMOD LOGIK
        ========================================================== */
     var audioFiles = ['assets/theme1.ogg'];
     var audio = document.getElementById('bg-music');
     
-    // Zufälligen Song auswählen
+    // Zufälligen Song auswählen (falls in Zukunft mehr in den Ordner kommen)
     var randomSong = audioFiles[Math.floor(Math.random() * audioFiles.length)];
     audio.src = randomSong;
     audio.volume = 0.3; // Standard-Lautstärke
@@ -195,15 +154,13 @@
 
     // Wenn die Seite geladen ist
     window.onload = function() {
-      initSlideshow(); // Starte Slideshow
-      
       setTimeout(function(){
         document.getElementById('info-panel').classList.add('visible');
         tryPlayMusic();
-      }, 500);
+      }, 500); // Leicht verzögertes Einblenden für cooleren Effekt
     };
 
-    // NEU: Diese Funktion wird von GMod beim Laden offiziell aufgerufen!
+    // GMod Standard-Funktion: Wird von GMod beim Laden offiziell aufgerufen!
     function GameDetails( servername, serverurl, mapname, maxplayers, steamid, gamemode, volume, language ) {
         if (volume !== undefined && volume > 0) {
             audio.volume = volume;
@@ -218,7 +175,7 @@
         tryPlayMusic(); 
     }
 
-    // Hardcore-Fix: Wir versuchen es jede Sekunde, bis das Spiel es endlich zulässt
+    // Hardcore-Fix: Versucht Musik zu starten, bis GMod den Block aufhebt
     var forcePlayInterval = setInterval(function() {
         if (!audio.paused) {
             clearInterval(forcePlayInterval);
