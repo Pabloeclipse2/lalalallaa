@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HL2RP | Loading</title>
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet" />
+  <!-- Lade moderne, technische Schriftarten -->
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet" />
   <style>
     /* Reset & Basis */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -12,14 +13,15 @@
         width: 100%; 
         height: 100%; 
         overflow: hidden; 
-        background: #050505; 
-        font-family: 'Roboto Condensed', Arial, sans-serif; 
+        background-color: #020813; /* Dunkles Blau-Schwarz als Fallback */
+        font-family: 'Chakra Petch', sans-serif; 
     }
 
-    /* ── Hintergrundbild (Statisch, nur 1 Bild) ────────────────── */
+    /* ── Hintergrundbild (1 Bild) ────────────────── */
     #background { 
         position: absolute; 
         top: 0; left: 0; right: 0; bottom: 0;
+        /* HIER IST DEIN BILD: Achte darauf, dass der Pfad stimmt! */
         background-image: url('assets/picture1.png');
         background-size: cover; 
         background-position: center;
@@ -27,107 +29,148 @@
         z-index: 1; 
     }
     
-    /* Düsteres HL2-Overlay (Vignette) */
-    #overlay { 
+    /* Dunkles Gradient-Overlay für bessere Lesbarkeit */
+    #overlay-gradient { 
         position: absolute; 
         top: 0; left: 0; right: 0; bottom: 0;
-        background: linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.85) 100%);
+        background: radial-gradient(circle at 70% 50%, rgba(2, 10, 25, 0.2) 0%, rgba(2, 10, 25, 0.85) 100%);
         z-index: 2;
     }
 
-    /* Terminal Scanlines für das "krassere" Feeling */
-    #scanlines {
+    /* Feines High-Tech Raster (Grid) über dem Bild */
+    #grid-overlay {
         position: absolute;
         top: 0; left: 0; right: 0; bottom: 0;
-        background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
-        background-size: 100% 4px;
+        background-image: 
+            linear-gradient(rgba(0, 150, 255, 0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 150, 255, 0.05) 1px, transparent 1px);
+        background-size: 40px 40px;
         z-index: 3;
         pointer-events: none;
     }
 
-    /* ── Info Panel ────────────────── */
+    /* ── Glas-Panel (Modern & Krass) ────────────────── */
     #info-panel {
       position: absolute;
-      bottom: 8%;
+      bottom: 10%;
       left: 5%;
       z-index: 10;
-      color: #fff;
-      text-transform: uppercase;
+      width: 650px;
+      /* Milchglas-Effekt (Glassmorphism) */
+      background: rgba(5, 15, 30, 0.55);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      /* Blaue Ränder */
+      border: 1px solid rgba(0, 170, 255, 0.2);
+      border-left: 5px solid #00aaff;
+      padding: 40px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px rgba(0, 170, 255, 0.05);
+      
+      /* Animation von Links */
       opacity: 0;
-      transform: translateY(30px);
-      transition: all 1.2s ease-out;
-      max-width: 650px; 
+      transform: translateX(-50px);
+      transition: all 1.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    #info-panel.visible { opacity: 1; transform: translateY(0); }
+    #info-panel.visible { 
+        opacity: 1; 
+        transform: translateX(0); 
+    }
 
-    /* Überschrift mit typischem HL2-Orange */
+    /* Überschrift in Weiß und strahlendem Blau */
     #info-panel h1 { 
         font-family: 'Rajdhani', sans-serif;
-        font-size: 68px; 
+        font-size: 65px; 
         font-weight: 700; 
         line-height: 0.9; 
-        letter-spacing: 2px; 
-        text-shadow: 2px 2px 15px rgba(0,0,0,0.9);
-        margin-bottom: 15px;
-        border-bottom: 2px solid #f37925;
-        padding-bottom: 10px;
-        display: inline-block;
+        letter-spacing: 3px; 
+        color: #ffffff;
+        text-transform: uppercase;
+        margin-bottom: 25px;
+        text-shadow: 0 0 15px rgba(255,255,255,0.2);
     }
-    /* Das Orange aus dem Half-Life Logo */
-    #info-panel h1 span { color: #f37925; } 
+    #info-panel h1 span { 
+        color: #00aaff; /* Blau */
+        text-shadow: 0 0 20px rgba(0, 170, 255, 0.6);
+    } 
     
+    /* Textbeschreibung */
     #info-panel p { 
-        font-size: 18px; 
-        font-weight: 300; 
-        color: #d1d1d1; 
+        font-size: 16px; 
+        font-weight: 400; 
+        color: #c4d7ec; /* Leicht bläuliches Weiß */
         letter-spacing: 1px;
-        text-shadow: 1px 1px 8px rgba(0,0,0,0.9);
-        text-transform: none;
-        line-height: 1.6;
-        background: rgba(10, 10, 10, 0.7);
-        padding: 20px;
-        border-left: 4px solid #f37925;
-        box-shadow: 0px 5px 15px rgba(0,0,0,0.5);
+        line-height: 1.7;
+        margin-bottom: 30px;
     }
 
-    /* Blinkender Status-Text */
-    .loading-status {
-        margin-top: 15px;
+    /* ── Animierter Ladebalken ────────────────── */
+    .loading-section {
+        width: 100%;
+    }
+    .loading-text {
         font-family: 'Rajdhani', sans-serif;
-        font-size: 16px;
-        color: #f37925;
-        letter-spacing: 3px;
-        font-weight: bold;
-        animation: pulse 1.5s infinite;
+        font-size: 15px;
+        color: #00aaff;
+        letter-spacing: 4px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+    }
+    .progress-bar-bg {
+        width: 100%;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.1);
+        position: relative;
+        overflow: hidden;
+        border-radius: 2px;
+    }
+    .progress-bar-fill {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 30%;
+        background: #00aaff;
+        box-shadow: 0 0 15px #00aaff, 0 0 5px #ffffff;
+        /* Ping-Pong Animation für den Ladebalken */
+        animation: loadingAnim 2.5s infinite ease-in-out;
     }
 
-    @keyframes pulse {
-        0% { opacity: 0.3; }
-        50% { opacity: 1; }
-        100% { opacity: 0.3; }
+    @keyframes loadingAnim {
+        0% { left: -30%; width: 30%; }
+        50% { width: 50%; }
+        100% { left: 100%; width: 30%; }
     }
   </style>
 </head>
 <body>
 
+  <!-- Audio Element -->
   <audio id="bg-music" loop></audio>
 
-  <!-- Das einzige Bild -->
+  <!-- 1. Der Hintergrund (Bild) -->
   <div id="background"></div>
 
-  <!-- Visuelle Effekte -->
-  <div id="overlay"></div>
-  <div id="scanlines"></div>
+  <!-- 2. Die visuellen Overlays (Gradient & Raster) -->
+  <div id="overlay-gradient"></div>
+  <div id="grid-overlay"></div>
 
-  <!-- Textbereich -->
+  <!-- 3. Das moderne Glas-Panel -->
   <div id="info-panel">
-    <h1>FRONTLINES<br><span>WARFARE</span></h1>
+    <h1>Z-HALF-LIFE:<br><span>2 ROLEPLAY</span></h1>
     <p>
       A high-quality HL2RP server based on Z-City with a lot of custom features, a custom framework, and much more!
       We use only high-quality models and strive to provide the best RP experience possible!
       Trust me, the loading time will be worth it...
     </p>
-    <div class="loading-status">ESTABLISHING CONNECTION...</div>
+    
+    <!-- Ladebalken Bereich -->
+    <div class="loading-section">
+        <div class="loading-text">Establishing Connection...</div>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill"></div>
+        </div>
+    </div>
   </div>
 
   <script>
@@ -137,45 +180,45 @@
     var audioFiles = ['assets/theme1.ogg'];
     var audio = document.getElementById('bg-music');
     
-    // Zufälligen Song auswählen (falls in Zukunft mehr in den Ordner kommen)
-    var randomSong = audioFiles[Math.floor(Math.random() * audioFiles.length)];
-    audio.src = randomSong;
-    audio.volume = 0.3; // Standard-Lautstärke
+    // Song auswählen (WICHTIG: Prüfe ob assets/theme1.ogg existiert!)
+    audio.src = audioFiles[0];
+    audio.volume = 0.3; // Lautstärke (0.0 bis 1.0)
 
-    // Abspiel-Funktion
     function tryPlayMusic() {
       var promise = audio.play();
       if (promise !== undefined) {
           promise.catch(function(e) { 
-            console.log("Autoplay von Browser blockiert - warte auf GMod Event"); 
+            console.log("Warte auf GMod Interaktion für Audio..."); 
           });
       }
     }
 
-    // Wenn die Seite geladen ist
+    // Beim Laden der Seite: Panel reinsliden lassen und Musik starten
     window.onload = function() {
       setTimeout(function(){
         document.getElementById('info-panel').classList.add('visible');
         tryPlayMusic();
-      }, 500); // Leicht verzögertes Einblenden für cooleren Effekt
+      }, 300);
     };
 
-    // GMod Standard-Funktion: Wird von GMod beim Laden offiziell aufgerufen!
+    // Offizielle GMod Lade-Funktion
     function GameDetails( servername, serverurl, mapname, maxplayers, steamid, gamemode, volume, language ) {
         if (volume !== undefined && volume > 0) {
             audio.volume = volume;
         } else if (volume === 0) {
-            audio.volume = 0; // Spieler hat Musik stummgeschaltet
+            audio.volume = 0; // Stummgeschaltet
         }
         tryPlayMusic();
     }
 
-    // GMod spezifische Funktion: Startet Musik bei Statusänderung
+    // Wenn GMod den Status ändert
     function SetStatusChanged( status ) {
+        // Hier könnte man den Text "Establishing Connection..." per JS ändern (optional)
+        document.querySelector('.loading-text').innerText = status;
         tryPlayMusic(); 
     }
 
-    // Hardcore-Fix: Versucht Musik zu starten, bis GMod den Block aufhebt
+    // Fallback: Erzwinge Musikstart
     var forcePlayInterval = setInterval(function() {
         if (!audio.paused) {
             clearInterval(forcePlayInterval);
