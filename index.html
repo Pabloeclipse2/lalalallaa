@@ -16,7 +16,7 @@
         font-family: 'Roboto Condensed', Arial, sans-serif; 
     }
 
-    /* ── Hintergrundbild (Einziges Bild) ────────────────── */
+    /* ── Hintergrundbild ────────────────── */
     #background { 
         position: absolute; 
         top: 0; left: 0; right: 0; bottom: 0;
@@ -27,18 +27,28 @@
         z-index: 1; 
     }
     
-    /* Dunkles Overlay wie in deinem Original */
+    /* Dunkles Overlay für besseren Kontrast */
     #overlay { 
         position: absolute; 
         top: 0; left: 0; right: 0; bottom: 0;
-        background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.6) 100%);
+        background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.7) 100%);
         z-index: 2;
     }
 
-    /* ── Info Panel (Originales Design, aber in Blau) ────────────────── */
+    /* ── VHS / Scanline Effekt (Punkte/Streifen) ────────────────── */
+    #scanlines {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.35) 51%);
+        background-size: 100% 4px;
+        z-index: 3;
+        pointer-events: none;
+    }
+
+    /* ── Info Panel (Jetzt Unten!) ────────────────── */
     #info-panel {
       position: absolute;
-      top: 10%;
+      bottom: 8%; /* Position nach unten gesetzt */
       left: 60px;
       z-index: 10;
       color: #fff;
@@ -59,7 +69,7 @@
         margin-bottom: 20px;
     }
     
-    /* Hier ist das neue Blau */
+    /* Blaue Akzentfarbe */
     #info-panel h1 span { color: #00aaff; } 
     
     #info-panel p { 
@@ -72,8 +82,7 @@
         line-height: 1.6;
         background: rgba(0, 0, 0, 0.4);
         padding: 15px;
-        /* Rand in Blau */
-        border-left: 4px solid #00aaff;
+        border-left: 4px solid #00aaff; /* Blauer Rand */
     }
   </style>
 </head>
@@ -81,9 +90,10 @@
 
   <audio id="bg-music" loop></audio>
 
-  <!-- Hintergrund und Overlay -->
+  <!-- Hintergrund und Effekte -->
   <div id="background"></div>
   <div id="overlay"></div>
+  <div id="scanlines"></div> <!-- Die VHS Linien -->
 
   <!-- Infobox -->
   <div id="info-panel">
