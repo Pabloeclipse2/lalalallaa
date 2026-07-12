@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Z-Berlin 1942RP | Loading</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    /* Reset & Basis */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { 
+        width: 100%; 
+        height: 100%; 
+        overflow: hidden; 
+        background: #000; 
+        font-family: 'Roboto Condensed', Arial, sans-serif; 
+    }
+
+    /* ── Hintergrundbild ────────────────── */
+    #slideshow { 
+        position: absolute; 
+        top: 0; left: 0; right: 0; bottom: 0;
+        z-index: 1; 
+    }
+    .slide {
+      position: absolute; 
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-size: cover; 
+      background-position: center;
+      background-repeat: no-repeat;
+      /* Weicher Fade für den Übergang (2 Sekunden) */
+      transition: opacity 2s ease-in-out;
+    }
+    
+    /* Dunkles Overlay */
+    #overlay { 
+        position: absolute; 
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.6) 100%);
+        z-index: 2;
+    }
+
+    /* ── Info Panel ────────────────── */
+    #info-panel {
+      position: absolute;
+      top: 10%;
+      left: 60px;
+      z-index: 10;
+      color: #fff;
+      text-transform: uppercase;
+      opacity: 0;
+      transform: translateX(-30px);
+      transition: all 1.2s ease-out;
+      max-width: 600px; 
+    }
+    #info-panel.visible { opacity: 1; transform: translateX(0); }
+
+    #info-panel h1 { 
+        font-size: 72px; 
+        font-weight: 700; 
+        line-height: 0.9; 
+        letter-spacing: -2px; 
+        text-shadow: 2px 2px 15px rgba(0,0,0,0.7);
+        margin-bottom: 20px;
+    }
+    #info-panel h1 span { color: #ff0000; } 
+    
+    #info-panel p { 
+        font-size: 18px; 
+        font-weight: 300; 
+        color: #ddd; 
+        letter-spacing: 1px;
+        text-shadow: 1px 1px 8px rgba(0,0,0,0.8);
+        text-transform: none;
+        line-height: 1.6;
+        background: rgba(0, 0, 0, 0.4);
+        padding: 15px;
+        border-left: 4px solid #ff0000;
+    }
+  </style>
+</head>
+<body>
+
+  <audio id="bg-music" loop></audio>
+
+  <!-- Leerer Container, wird per JavaScript gefüllt -->
+  <div id="slideshow"></div>
+
+  <div id="overlay"></div>
+
+<div id="info-panel">
+  <h1>FRONTLINES<br><span>WARFARE</span></h1>
+  <p>
+    Frontlines Warfare is a recreation of Arma Reforger set in Z-City, featuring a similar UI, gameplay, and overall feel.
+    In addition, the server includes dynamic events such as World War II, the Napoleonic Wars, and many more.
+    These events occur randomly and automatically switch the server configuration to match the selected era, providing a fun and immersive experience without requiring any administrator intervention.
+  </p>
+</div>
+
+  <script>
+    /* ==========================================================
+       BILDER SLIDESHOW LOGIK
+       ========================================================== */
+    var images = [
+      'assets/picture1.png',
+      'assets/picture2.png',
+      'assets/picture3.png',
+      'assets/picture4.png',
+      'assets/picture5.png',
+      'assets/picture6.png',
+      'assets/picture7.png'
+    ];
+
+    // Funktion um Arrays zufällig zu mischen
+    function shuffleArray(array) {
+      let shuffled = array.slice();
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    let slideshowContainer = document.getElementById('slideshow');
+    let shuffledImages = shuffleArray(images);
+    let currentImageIndex = 0;
+    let currentSlide = null;
+
+    // Erstes Bild laden
+    function initSlideshow() {
+      currentSlide = document.createElement('div');
+      currentSlide.className = 'slide';
+      currentSlide.style.backgroundImage = "url('" + shuffledImages[currentImageIndex] + "')";
+      currentSlide.style.opacity = 1;
+      currentSlide.style.zIndex = 1;
+      slideshowContainer.appendChild(currentSlide);
+
+      // Starte Intervall (alle 6 Sekunden wechselt das Bild)
+      setInterval(changeSlide, 6000);
+    }
+
+    function changeSlide() {
+      currentImageIndex++;
+
+      // Wenn alle Bilder durch sind, neu mischen (randomized immer wieder)
+      if (currentImageIndex >= shuffledImages.length) {
+        shuffledImages = shuffleArray(images);
+        currentImageIndex = 0;
+      }
+
+      // Neues Bild-Element erstellen
+      let nextSlide = document.createElement('div');
+      nextSlide.className = 'slide';
+      nextSlide.style.backgroundImage = "url('" + shuffledImages[currentImageIndex] + "')";
+      nextSlide.style.opacity = 0; 
+      nextSlide.style.zIndex = 2; // Wird über das aktuelle Bild gelegt (verhindert schwarzen Bildschirm)
+      
+      slideshowContainer.appendChild(nextSlide);
+
+      // Kurz warten, damit das Element im DOM gerendert ist, bevor opacity animiert wird
+      setTimeout(function() {
+        nextSlide.style.opacity = 1;
+      }, 50);
+
+      // Nach Abschluss der Animation (2 Sekunden) das alte Bild entfernen
+      setTimeout(function() {
+        if (currentSlide && currentSlide.parentNode) {
+          slideshowContainer.removeChild(currentSlide);
+        }
+        currentSlide = nextSlide;
+        currentSlide.style.zIndex = 1; // Z-Index wieder zurücksetzen
+      }, 2050);
+    }
+
+    /* ==========================================================
+       AUDIO & GMOD LOGIK
+       ========================================================== */
+    var audioFiles = ['assets/theme1.ogg'];
+    var audio = document.getElementById('bg-music');
+    
+    // Zufälligen Song auswählen
+    var randomSong = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+    audio.src = randomSong;
+    audio.volume = 0.3; // Standard-Lautstärke
+
+    // Abspiel-Funktion
+    function tryPlayMusic() {
+      var promise = audio.play();
+      if (promise !== undefined) {
+          promise.catch(function(e) { 
+            console.log("Autoplay von Browser blockiert - warte auf GMod Event"); 
+          });
+      }
+    }
+
+    // Wenn die Seite geladen ist
+    window.onload = function() {
+      initSlideshow(); // Starte Slideshow
+      
+      setTimeout(function(){
+        document.getElementById('info-panel').classList.add('visible');
+        tryPlayMusic();
+      }, 500);
+    };
+
+    // NEU: Diese Funktion wird von GMod beim Laden offiziell aufgerufen!
+    function GameDetails( servername, serverurl, mapname, maxplayers, steamid, gamemode, volume, language ) {
+        if (volume !== undefined && volume > 0) {
+            audio.volume = volume;
+        } else if (volume === 0) {
+            audio.volume = 0; // Spieler hat Musik stummgeschaltet
+        }
+        tryPlayMusic();
+    }
+
+    // GMod spezifische Funktion: Startet Musik bei Statusänderung
+    function SetStatusChanged( status ) {
+        tryPlayMusic(); 
+    }
+
+    // Hardcore-Fix: Wir versuchen es jede Sekunde, bis das Spiel es endlich zulässt
+    var forcePlayInterval = setInterval(function() {
+        if (!audio.paused) {
+            clearInterval(forcePlayInterval);
+        } else {
+            tryPlayMusic();
+        }
+    }, 1000);
+  </script>
+</body>
+</html>
